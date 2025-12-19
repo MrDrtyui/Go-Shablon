@@ -1,18 +1,22 @@
 package app
 
 import (
-	"net/http"
-
 	"app/internal/auth"
 	"app/internal/config"
 	"app/internal/db"
+	"app/internal/router"
 	"app/internal/user"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/labstack/gommon/log"
 )
 
-func Run() error {
+type App struct {
+	Router *router.Router
+	Cfg    *config.Config
+	Db     *db.Db
+}
+
+func NewApp() *App {
 	// TODO: init config
 	cfg := config.MustLoad()
 	log.Info(cfg.Env)
@@ -20,7 +24,6 @@ func Run() error {
 	// TODO: init db
 	db := db.NewDbClient(cfg.Database.Url)
 	log.Info("Open connect to db", db.Client.Schema)
-	defer db.Close()
 
 	// TODO: jwt
 	jwtSvc := auth.New(cfg.Jwt.Secret, cfg.Jwt.TtlHours)
@@ -30,15 +33,11 @@ func Run() error {
 	userService := user.NewSercie(userRepo)
 	userHandler := user.NewHandler(userService, jwtSvc)
 
-	chi := chi.NewRouter()
+	r := router.NewRouter(userHandler)
 
-	chi.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hello epta"))
-	})
-
-	chi.Post("/auth/register", userHandler.Register)
-
-	// TODO: run server
-	log.Info("Starting server at", cfg.Port)
-	return http.ListenAndServe(cfg.Port, chi)
+	return &App{
+		Router: r,
+		Cfg:    cfg,
+		Db:     db,
+	}
 }
