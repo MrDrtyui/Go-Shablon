@@ -1,0 +1,11 @@
+env: "dev"
+
+http:
+  port: ":9000"
+
+database:
+  url: "postgres://user:pass@localhost:5432/postgres?sslmode=disable"
+
+jwt:
+  secret: ""
+  ttlHours: 24h
