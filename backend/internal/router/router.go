@@ -25,6 +25,8 @@ func NewRouter(userHandler *user.Handler) *Router {
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/register", userHandler.Register)
 		r.Post("/login", userHandler.Login)
+		r.Post("/refresh", userHandler.Refresh)
+		r.Post("/logout", userHandler.Logout)
 	})
 
 	return &Router{chi: r}

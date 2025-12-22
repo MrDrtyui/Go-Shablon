@@ -3,14 +3,30 @@
 package ent
 
 import (
+	"app/ent/refreshtoken"
 	"app/ent/schema"
 	"app/ent/user"
+	"time"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	refreshtokenFields := schema.RefreshToken{}.Fields()
+	_ = refreshtokenFields
+	// refreshtokenDescTokenHash is the schema descriptor for token_hash field.
+	refreshtokenDescTokenHash := refreshtokenFields[0].Descriptor()
+	// refreshtoken.TokenHashValidator is a validator for the "token_hash" field. It is called by the builders before save.
+	refreshtoken.TokenHashValidator = refreshtokenDescTokenHash.Validators[0].(func(string) error)
+	// refreshtokenDescCreatedAt is the schema descriptor for created_at field.
+	refreshtokenDescCreatedAt := refreshtokenFields[3].Descriptor()
+	// refreshtoken.DefaultCreatedAt holds the default value on creation for the created_at field.
+	refreshtoken.DefaultCreatedAt = refreshtokenDescCreatedAt.Default.(func() time.Time)
+	// refreshtokenDescRevoked is the schema descriptor for revoked field.
+	refreshtokenDescRevoked := refreshtokenFields[4].Descriptor()
+	// refreshtoken.DefaultRevoked holds the default value on creation for the revoked field.
+	refreshtoken.DefaultRevoked = refreshtokenDescRevoked.Default.(bool)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescEmail is the schema descriptor for email field.

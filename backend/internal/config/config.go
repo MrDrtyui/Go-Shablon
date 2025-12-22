@@ -24,8 +24,9 @@ type Database struct {
 }
 
 type Jwt struct {
-	Secret   string        `yaml:"secret"`
-	TtlHours time.Duration `yaml:"ttlHours"`
+	Secret          string        `yaml:"secret"`
+	AccessTtlHours  time.Duration `yaml:"accessTtlHours"`
+	RefreshTtlHours time.Duration `yaml:"refreshTtlHours"`
 }
 
 func MustLoad() *Config {

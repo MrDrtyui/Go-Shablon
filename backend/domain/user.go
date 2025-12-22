@@ -18,6 +18,15 @@ type UserResponse struct {
 }
 
 type AuthResponse struct {
-	User  UserResponse `json:"user"`
-	Token string       `json:"token"`
+	User         UserResponse `json:"user"`
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+}
+
+type RefreshTokenDTO struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type LogoutDTO struct {
+	RefreshToken string `json:"refresh_token"`
 }

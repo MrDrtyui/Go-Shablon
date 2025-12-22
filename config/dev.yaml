@@ -1,0 +1,9 @@
+env: dev
+http:
+  port: ":9000"
+database:
+  url: "postgres://user:pass@localhost:5432/postgres?sslmode=disable"
+jwt:
+  secret: "my-super-secret-jwt-key-change-in-production"
+  accessTtlHours: 1h
+  refreshTtlHours: 720h

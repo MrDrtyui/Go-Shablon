@@ -4,6 +4,7 @@ import (
 	"app/internal/auth"
 	"app/internal/config"
 	"app/internal/db"
+	"app/internal/refreshtoken"
 	"app/internal/router"
 	"app/internal/user"
 
@@ -26,12 +27,16 @@ func NewApp() *App {
 	log.Info("Open connect to db", db.Client.Schema)
 
 	// TODO: jwt
-	jwtSvc := auth.New(cfg.Jwt.Secret, cfg.Jwt.TtlHours)
+	jwtSvc := auth.New(cfg.Jwt.Secret, cfg.Jwt.AccessTtlHours)
+
+	// TODO: refresh token
+	refreshTokenRepo := refreshtoken.NewPostgresRepo(db)
+	refreshTokenService := refreshtoken.NewService(refreshTokenRepo, cfg.Jwt.RefreshTtlHours)
 
 	// TODO: init chi
 	userRepo := user.NewPostgresRepo(db)
 	userService := user.NewSercie(userRepo)
-	userHandler := user.NewHandler(userService, jwtSvc)
+	userHandler := user.NewHandler(userService, jwtSvc, refreshTokenService)
 
 	r := router.NewRouter(userHandler)
 
