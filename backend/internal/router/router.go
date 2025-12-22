@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 type Router struct {
@@ -14,7 +15,17 @@ type Router struct {
 func NewRouter(userHandler *user.Handler) *Router {
 	r := chi.NewRouter()
 
-	r.Post("/auth/register", userHandler.Register)
+	// Middleware
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.RequestID)
+	r.Use(middleware.RealIP)
+
+	// Auth routes
+	r.Route("/auth", func(r chi.Router) {
+		r.Post("/register", userHandler.Register)
+		r.Post("/login", userHandler.Login)
+	})
 
 	return &Router{chi: r}
 }
