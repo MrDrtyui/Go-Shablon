@@ -4,8 +4,11 @@ import (
 	"app/internal/user"
 	"net/http"
 
+	_ "app/docs" // Import generated docs
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Router struct {
@@ -15,13 +18,15 @@ type Router struct {
 func NewRouter(userHandler *user.Handler) *Router {
 	r := chi.NewRouter()
 
-	// Middleware
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 
-	// Auth routes
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
+
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/register", userHandler.Register)
 		r.Post("/login", userHandler.Login)

@@ -24,6 +24,16 @@ func NewHandler(s *Service, jwt *auth.JWT, refreshService *refreshtoken.Service)
 	}
 }
 
+// Register godoc
+// @Summary      Register a new user
+// @Description  Create a new user account with email and password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body domain.RegisterDTO true "Registration credentials"
+// @Success      201 {object} domain.AuthResponse "Successfully registered"
+// @Failure      400 {object} domain.ErrorResponse "Invalid request body or validation error"
+// @Router       /auth/register [post]
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	var dto domain.RegisterDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -68,6 +78,18 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, resp)
 }
 
+// Login godoc
+// @Summary      Login user
+// @Description  Authenticate user with email and password
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body domain.LoginDTO true "Login credentials"
+// @Success      200 {object} domain.AuthResponse "Successfully logged in"
+// @Failure      400 {object} domain.ErrorResponse "Invalid request body"
+// @Failure      401 {object} domain.ErrorResponse "Invalid credentials"
+// @Failure      500 {object} domain.ErrorResponse "Internal server error"
+// @Router       /auth/login [post]
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var dto domain.LoginDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -111,6 +133,18 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, resp)
 }
 
+// Refresh godoc
+// @Summary      Refresh access token
+// @Description  Generate new access and refresh tokens using a valid refresh token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body domain.RefreshTokenDTO true "Refresh token"
+// @Success      200 {object} domain.AuthResponse "Successfully refreshed tokens"
+// @Failure      400 {object} domain.ErrorResponse "Invalid request body"
+// @Failure      401 {object} domain.ErrorResponse "Invalid or expired refresh token"
+// @Failure      500 {object} domain.ErrorResponse "Internal server error"
+// @Router       /auth/refresh [post]
 func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 	var dto domain.RefreshTokenDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
@@ -156,6 +190,17 @@ func (h *Handler) Refresh(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, resp)
 }
 
+// Logout godoc
+// @Summary      Logout user
+// @Description  Revoke refresh token to logout user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        request body domain.LogoutDTO true "Refresh token to revoke"
+// @Success      204 "Successfully logged out"
+// @Failure      400 {object} domain.ErrorResponse "Invalid request body"
+// @Failure      500 {object} domain.ErrorResponse "Failed to logout"
+// @Router       /auth/logout [post]
 func (h *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	var dto domain.LogoutDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
